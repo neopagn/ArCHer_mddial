@@ -12,7 +12,7 @@ import torch
 import transformers
 from tqdm import tqdm
 from archer.environment import TwentyQuestionsEnv, BatchedTwentyQuestionsEnv,\
-    BatchedAdventureEnv, BatchedGuessMyCityEnv, BatchedWebShopEnv, TwentyQuestionsEnv
+    BatchedAdventureEnv, BatchedGuessMyCityEnv, BatchedWebShopEnv, BatchedMDDialEnv
 from archer.models import ArcherAgent, CHAIAgent
 from archer.algorithms import offpolicy_train_loop
 from archer.prompts import MISTRAL_TWENTY_QUESTIONS_TEMPLATE, mistral_twenty_questions_decode_actions
@@ -29,7 +29,7 @@ transformers.logging.set_verbosity_error()
 
 
 
-CONFIG_NAME = "archer_20q"
+CONFIG_NAME = "mddial"
 @hydra.main(version_base=None, config_path="./config/", config_name=CONFIG_NAME)
 def main(config: "DictConfig"):
     colorful_print(">>> Configuration file: "+CONFIG_NAME+"<<<", fg='blue')
