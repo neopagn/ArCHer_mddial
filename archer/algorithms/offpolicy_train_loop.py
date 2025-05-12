@@ -135,7 +135,7 @@ def offpolicy_train_loop(env,\
             # data = list(filter(lambda x: x["reward"] >0, data))
             info.update(trainer.update(replay_buffer, no_update_actor = (i < warmup_iter)))
         if use_wandb and accelerator.is_main_process:
-            wandb.log(info)
+            #wandb.log(info)
         if (i+1) % save_freq == 0 and save_path is not None and accelerator.is_main_process:
             print("Saving")
             trainer.save(os.path.join(save_path, 'trainer.pt'))
