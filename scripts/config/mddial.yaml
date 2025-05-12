@@ -3,12 +3,12 @@ defaults:
   - _self_
 
 # checkpoint
-checkpoint_path: '/home/biggod/archer/archer_public_data/gpt2_bc_mddial.pt'   # nếu bạn có pretrained checkpoint, nếu không để null hoặc xóa dòng này
-save_path: '/home/biggod/archer/archer_public_data/archer_mddial'
+checkpoint_path: '/kaggle/input/mddial-training/gpt2_bc_20q.pt'   # nếu bạn có pretrained checkpoint, nếu không để null hoặc xóa dòng này
+save_path: '/kaggle/working/'
 
 # env
 env_name: mddial
-env_load_path: '/home/biggod/archer/archer_public_data/mddial_t5_oracle.pt'
+env_load_path: '/kaggle/input/mddial-training/mddial_t5_base_oracle.pt'
 
 # training hyperparameters
 rollout_size: 64              # có thể giảm nếu MDDial nặng hơn 20Q
