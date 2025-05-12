@@ -24,6 +24,6 @@ max_conversation_length: 20
 
 
 # wandb logging
-use_wandb: False
+use_wandb: false
 project_name: 'llm_rl_mddial'
 run_name: 'archer-mddial'
