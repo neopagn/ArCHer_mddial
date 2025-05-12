@@ -155,8 +155,11 @@ class BatchedMDDialEnv():
 
         # Initialize the language model for generating 'Yes'/'No' answers
         if env_load_path and cache_dir and device is not None:
-            self.tokenizer = T5Tokenizer.from_pretrained("google/flan-t5-small")
-            self.model = T5ForConditionalGeneration.from_pretrained("google/flan-t5-small", cache_dir=cache_dir).to(device)
+            loaded_oracle_info = torch.load(env_load_path, map_location='cpu')
+            model_name_to_load = loaded_oracle_info.get("tokenizer_name_or_path", "t5-base") # Lấy tên model từ oracle, hoặc mặc định là t5-base
+
+            self.tokenizer = T5Tokenizer.from_pretrained("model_name_to_load")
+            self.model = T5ForConditionalGeneration.from_pretrained("model_name_to_load", cache_dir=cache_dir).to(device)
             if env_load_path:
                 try:
                     self.model.load_state_dict(torch.load(env_load_path, map_location=device)['model_state_dict'])
