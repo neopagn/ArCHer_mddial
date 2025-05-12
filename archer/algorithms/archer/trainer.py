@@ -82,19 +82,7 @@ class ArcherTrainer():
         q1, q2, v1, v2, target_q1, target_q2 = q1.detach().cpu(), q2.detach().cpu(), v1.detach().cpu(),\
                                             v2.detach().cpu(), target_q1.detach().cpu(), target_q2.detach().cpu()
                                             
-        if self.accelerator.is_main_process:
-            import wandb
-            wandb.log({
-                "q1.mean": torch.mean(q1).item(),
-                "q2.mean": torch.mean(q2).item(),
-                "q1.mse": mse_q1.detach().cpu().item(),
-                "q2.mse": mse_q2.detach().cpu().item(),
-                "target_q1.mean": torch.mean(target_q1).item(),
-                "target_q2.mean": torch.mean(target_q2).item(),
-                "target_v1.mean": torch.mean(target_v1).item(),
-                "target_v2.mean": torch.mean(target_v2).item(),
-                "step": self.step  # hoặc dùng self.total_steps nếu bạn có
-            })
+        
                                             
         return {"q1.loss": q1_loss,\
                     "q2.loss": q2_loss,\
