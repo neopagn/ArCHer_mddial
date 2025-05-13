@@ -11,13 +11,13 @@ env_name: mddial
 env_load_path: '/kaggle/input/mddial-training/mddial_t5_base_oracle.pt'
 
 # training hyperparameters
-rollout_size: 64              # có thể giảm nếu MDDial nặng hơn 20Q
-batch_size: 4                 # tương tự, giảm nếu bị OOM
-iterations: 30
-epochs: 50
+rollout_size: 128              # có thể giảm nếu MDDial nặng hơn 20Q
+batch_size: 8                 # tương tự, giảm nếu bị OOM
+iterations: 50
+epochs: 20
 actor_epochs: 3
-warmup_iter: 20
-grad_accum_steps: 16
+warmup_iter: 15
+grad_accum_steps: 32
 critic_lr: 2e-5
 lm_lr: 1e-6
 max_conversation_length: 20
