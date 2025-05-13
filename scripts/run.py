@@ -117,8 +117,12 @@ def main(config: "DictConfig"):
     # agent = accelerator.prepare(agent)
 
     if config.use_wandb and accelerator.is_main_process:
-        wandb.login(key=config.wandb_key)
-        wandb.init(project=config.project_name, name=config.run_name, config=dict(config))
+        wandb_key = os.getenv('WANDB_API_KEY') or config.wandb_key
+        if not wandb_key:
+            print("Warning: No WANDB_API_KEY found in environment variables or config")
+        else:
+            wandb.login(key=wandb_key)
+            wandb.init(project=config.project_name, name=config.run_name, config=dict(config))
 
     offpolicy_train_loop(env = env,
                 agent = agent,
