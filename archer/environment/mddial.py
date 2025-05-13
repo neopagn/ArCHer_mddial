@@ -131,7 +131,12 @@ class MDDialEnv():
             reward = -1
 
         self.done = True
-        self.history += f"Doctor makes a diagnosis: {diagnosis_attempt}\n"
+        # Lấy câu chẩn đoán đầu tiên (tới dấu chấm hoặc hết dòng)
+        diag = diagnosis_attempt.strip()
+        # Nếu có nhiều câu, chỉ lấy câu đầu tiên
+        if '.' in diag:
+            diag = diag.split('.')[0] + '.'
+        self.history += f"Doctor makes a diagnosis: {diag}\n"
 
         return self.history, reward, self.done
 
