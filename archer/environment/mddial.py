@@ -138,6 +138,9 @@ class MDDialEnv():
             diag = diag.split('.')[0] + '.'
         self.history += f"Doctor makes a diagnosis: {diag}\n"
 
+        # In reward và ground truth sau khi done
+        print(f"[DIAGNOSE] Reward: {reward} | Ground truth: {self.curr_disease} | Agent diagnosis: {diag}")
+
         return self.history, reward, self.done
 
     def copy(self):
