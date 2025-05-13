@@ -82,6 +82,8 @@ def batch_interact_environment(agent, tokenizer, env, num_trajectories,
                                         "action": action[i]})
                 batch_obs[i] = next_obs
                 batch_done[i] = done
+                if done: 
+                    print(f"[Episode {i}] Reward: {r} | Ground truth: {env.env_list[i].curr_disease} | Agent diagnosis: {action[i]}")
             # obs = next_obs
         print(trajectories[0][-1]["next_observation"])
         all_trajectories += [post_f(add_mc_return(add_trajectory_reward(trajectory)))
