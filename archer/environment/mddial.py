@@ -94,8 +94,10 @@ class MDDialEnv():
         if self.done:
             return self.history, 0, True
 
+        if '?' in question:
+            question = question.split('?')[0] + '?'
         answer = self._get_answer_to_question(question)
-        self.history += f"Doctor: {question}\nPatient: {answer}\n"
+        self.history += f"{question}\nPatient: {answer}\n"
         self.count += 1
 
         if self.count >= self.max_conversation_length:
