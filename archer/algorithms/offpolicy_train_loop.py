@@ -68,7 +68,7 @@ def offpolicy_train_loop(env,\
             # print("Not using existing checkpoint")
             print("Loading from checkpoint")
             trainer.load(os.path.join(save_path, 'trainer.pt'))
-            all_trajectories = torch.load(os.path.join(save_path, 'trajectories.pt'))
+            all_trajectories = torch.load(os.path.join(save_path, 'trajectories.pt'),weights_only=False)
             replay_buffer = torch.load(os.path.join(save_path, 'replay_buffer.pt'))
         else:
             print("Creating new checkpoint directory")
@@ -118,7 +118,7 @@ def offpolicy_train_loop(env,\
         else:
             info = {}
         accelerator.wait_for_everyone()
-        all_trajectories = torch.load(os.path.join(save_path, 'trajectories.pt'))
+        all_trajectories = torch.load(os.path.join(save_path, 'trajectories.pt'), weights_only=False)
         replay_buffer = torch.load(os.path.join(save_path, 'replay_buffer.pt'))
         print("Training")
         if 'filtered' in agent_type.lower():
