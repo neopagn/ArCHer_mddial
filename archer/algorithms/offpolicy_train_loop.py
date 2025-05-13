@@ -112,7 +112,7 @@ def offpolicy_train_loop(env,\
                     "rollout.reward.min": np.min([d["reward"] for d in data])})
             print(">>> Saving Replay Buffer")
             torch.save(replay_buffer, os.path.join(save_path, 'replay_buffer.pt'))
-            torch.save(all_trajectories, os.path.join(save_path, 'trajectories.pt'), weights_only=False)
+            torch.save(all_trajectories, os.path.join(save_path, 'trajectories.pt'))
             print(">>> Saved Replay Buffer")
             time.sleep(15)
         else:
