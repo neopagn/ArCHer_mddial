@@ -201,9 +201,9 @@ class BatchedMDDialEnv():
             for i, ans in enumerate(answers):
                 ans_lower = ans.strip().lower()
                 if 'yes' in ans_lower:
-                    processed_answers.append("Yes.")
+                    processed_answers.append("Yes")
                 elif 'no' in ans_lower:
-                    processed_answers.append("No.")
+                    processed_answers.append("No")
                 else:
                     # Fallback: use the symptom-based logic if the model's answer is unclear
                     processed_answers.append(self.env_list[i]._get_answer_to_question(questions[i]))

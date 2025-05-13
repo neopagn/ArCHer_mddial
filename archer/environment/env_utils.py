@@ -38,43 +38,52 @@ def add_mc_return(trajectory, gamma = 0.95):
 #     return raw_action
 
 
-def batch_interact_environment(agent, tokenizer, env, num_trajectories,\
+def batch_interact_environment(agent, tokenizer, env, num_trajectories,
         post_f = lambda x: x, use_tqdm = True, decode_f = lambda x: x,
         env_idx = None):
     """
-    in a bacthed way, interact with the environments  to get a list of trajectories
+    in a batched way, interact with the environments to get a list of trajectories
     [[{"observation":, "next_observation":, "reward":, "done":},...],...]
     post_f: function to add additional attributes to the trajectory
     """
     bsize = env.bsize
     all_trajectories = []
     for num_t in tqdm(range(num_trajectories//bsize), disable = not use_tqdm):
-        done = False
         trajectories = [[] for _ in range(bsize)]
-        # obs = reset_to(env, 69)
         batch_obs = env.reset(idx=env_idx)
         batch_done = [False,]*bsize
         steps = 0
         while not all(batch_done):
             steps += 1
-            # print(f"Environment stpes {str(steps)}")
             action = agent.get_action(batch_obs)
-            batch_return = env.step(decode_f(action))
-            for i,result in zip(range(bsize), batch_return):
-                if result is None:
+            # Xác định action nào là chẩn đoán
+            is_diag = []
+            for a in action:
+                a_strip = a.strip()
+                # Có thể điều chỉnh điều kiện này cho phù hợp với format action chẩn đoán
+                if a_strip.startswith('Based on your symptoms') or a_strip.startswith('Doctor: Based on your symptoms'):
+                    is_diag.append(True)
+                else:
+                    is_diag.append(False)
+            # Tạo batch_return: nếu là chẩn đoán thì gọi diagnose, ngược lại gọi step
+            batch_return = [None]*bsize
+            for i in range(bsize):
+                if batch_done[i]:
                     continue
+                if is_diag[i]:
+                    result = env.env_list[i].diagnose(action[i])
+                else:
+                    result = env.env_list[i].step(action[i])
                 next_obs, r, done = result
-                trajectories[i].append({"observation": batch_obs[i], \
-                                "next_observation": next_obs, \
-                                "reward": r, \
-                                "done": done, \
-                                "action": action[i]})
+                trajectories[i].append({"observation": batch_obs[i],
+                                        "next_observation": next_obs,
+                                        "reward": r,
+                                        "done": done,
+                                        "action": action[i]})
                 batch_obs[i] = next_obs
                 batch_done[i] = done
             # obs = next_obs
         print(trajectories[0][-1]["next_observation"])
-        all_trajectories += [post_f(add_mc_return(add_trajectory_reward(trajectory)))\
+        all_trajectories += [post_f(add_mc_return(add_trajectory_reward(trajectory)))
                               for trajectory in trajectories]
-        # breakpoint()
-        # trajectories.append(post_f(add_trajectory_reward(trajectory)))
     return all_trajectories
