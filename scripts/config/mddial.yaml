@@ -13,7 +13,7 @@ env_load_path: '/kaggle/input/mddial-training/mddial_t5_base_oracle.pt'
 # training hyperparameters
 rollout_size: 64              # có thể giảm nếu MDDial nặng hơn 20Q
 batch_size: 16                 # tương tự, giảm nếu bị OOM
-iterations: 70
+iterations: 100
 epochs: 25
 actor_epochs: 3
 warmup_iter: 0
