@@ -8,3 +8,4 @@ from .guess_my_city import BatchedGuessMyCityEnv
 from .webshop import BatchedWebShopEnv
 from .llm_twenty_questions_subset import LLMBatchedTwentyQuestionsEnv
 from .mddial import BatchedMDDialEnv
+from .mddial import DISEASE_SYMPTOMS
