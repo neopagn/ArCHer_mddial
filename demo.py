@@ -4,7 +4,7 @@ from archer.environment import BatchedMDDialEnv, DISEASE_SYMPTOMS
 import os
 from datetime import datetime
 
-def load_model(model_path=r"E:\mddia\ArCHer_mddial\Model-146\trainer.pt", device='cuda'):
+def load_model(model_path=r"/kaggle/input/mddiall/trainer.pt", device='cuda'):
     model = AutoModelForCausalLM.from_pretrained('gpt2').to(device)
     tokenizer = AutoTokenizer.from_pretrained('gpt2', trust_remote_code=True)
     tokenizer.pad_token = tokenizer.eos_token
@@ -101,7 +101,7 @@ def clean_diagnosis(diagnosis):
 def run_demo(num_conversations=200):
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     model, tokenizer = load_model(device=device)
-    env = create_env(device=device, bsize=1, env_load_path=r"mddial_t5_base_oracle.pt")
+    env = create_env(device=device, bsize=1, env_load_path=r"/kaggle/input/mddiall/mddial_t5_base_oracle.pt")
     
     # Create output directory if it doesn't exist
     output_dir = "conversation_results"
