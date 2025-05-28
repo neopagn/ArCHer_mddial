@@ -3,15 +3,16 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, T5ForConditionalGe
 from archer.environment import BatchedMDDialEnv, DISEASE_SYMPTOMS
 import os
 
-def load_trained_model(model_path="/home/biggod/archer/Model-145/trainer.pt", device='cuda'):
-    # Load model và tokenizer
-    model = AutoModelForCausalLM.from_pretrained('gpt2').to(device)
-    tokenizer = AutoTokenizer.from_pretrained('gpt2', trust_remote_code=True)
-    tokenizer.pad_token = tokenizer.eos_token
-    tokenizer.pad_token_id = tokenizer.eos_token_id
-    
-    # Load weights đã train
+def load_trained_model(model_path=r"Model-145\trainer.pt", device='cuda'):
     try:
+        print(f"Attempting to load base GPT-2 model and tokenizer from cache (if available) or Hugging Face Hub...")
+        model = AutoModelForCausalLM.from_pretrained('gpt2').to(device)
+        tokenizer = AutoTokenizer.from_pretrained('gpt2', trust_remote_code=True)
+        tokenizer.pad_token = tokenizer.eos_token
+        tokenizer.pad_token_id = tokenizer.eos_token_id
+        print("Base GPT-2 model and tokenizer initialized successfully.")
+
+        print(f"Now attempting to load *trained* weights from: {model_path}")
         trainer_state = torch.load(model_path, map_location=device)
         if 'model_state_dict' in trainer_state:
             state_dict = trainer_state['model_state_dict']
@@ -19,11 +20,18 @@ def load_trained_model(model_path="/home/biggod/archer/Model-145/trainer.pt", de
             state_dict = trainer_state['model']
         else:
             state_dict = trainer_state
+
+        if not state_dict:
+            raise ValueError(f"State dictionary from {model_path} is empty or invalid.")
+
         model.load_state_dict(state_dict)
-        print(f"Loaded model weights from: {model_path}")
+        print(f"Successfully loaded *trained* model weights from: {model_path}")
+
     except Exception as e:
-        print(f"Error loading model: {str(e)}")
-    
+        # Đây là dòng cực kỳ quan trọng để bạn thấy lỗi khi load trainer.pt
+        print(f"!!!!! CRITICAL ERROR: Failed to load trained model from {model_path}. Error: {str(e)} !!!!!")
+        return None, None # Trả về None để hàm gọi có thể kiểm tra
+
     return model, tokenizer
 
 def create_env(device='cuda', bsize=1, env_load_path=''):
@@ -117,7 +125,11 @@ Doctor:"""
 def run_demo():
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     model, tokenizer = load_trained_model(device=device)
-    env = create_env(device=device, bsize=1, env_load_path="/home/biggod/archer/mddial_t5_base_oracle.pt")
+    if model is None or tokenizer is None:
+        print("ERROR: Main trained model or tokenizer could not be loaded. Please fix the error above and try again.")
+        return # Thoát nếu model chính không tải được
+
+    env = create_env(device=device, bsize=1, env_load_path=r"mddial_t5_base_oracle.pt")
     
     # Reset environment
     history = env.reset()[0]
@@ -151,12 +163,12 @@ def run_demo():
     if 'diagnosis' not in locals():
         diagnosis = generate_question(model, tokenizer, history, device, curr_disease=env.env_list[0].curr_disease, 
                                     question_count=question_count, asked_questions=asked_questions)
-        if diagnosis.lower().startswith(("based on your symptoms", "i diagnose you with", "you have")):
-            diagnoses = diagnosis.split("Based on your symptoms")
-            if len(diagnoses) > 1:
-                diagnosis = "Based on your symptoms" + diagnoses[1]
-                if "." in diagnosis:
-                    diagnosis = diagnosis.split(".")[0] + "."
+        # if diagnosis.lower().startswith(("based on your symptoms", "i diagnose you with", "you have")):
+        #     diagnoses = diagnosis.split("Based on your symptoms")
+        #     if len(diagnoses) > 1:
+        #         diagnosis = "Based on your symptoms" + diagnoses[1]
+        #         if "." in diagnosis:
+        #             diagnosis = diagnosis.split(".")[0] + "."
     
     print("\nFinal diagnosis:", diagnosis)
     print("Correct diagnosis:", env.env_list[0].curr_disease)
